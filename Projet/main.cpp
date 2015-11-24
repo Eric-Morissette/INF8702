@@ -90,19 +90,42 @@ void dessinerOutline(double size)
         {
         case OutlineAlgorithm::OUTLINE_HALO:
             Variable::progNuanceurOpenGL.activer();
+            {
+                glColor3f(0.0f, 0.0f, 0.0f);
 
-            glScaled(1.05, 1.05, 1.05);
-            glColor3f(0.0f, 0.0f, 0.0f);
-
-            dessinerObjet(size);
-
+                dessinerObjet(size * 1.02);
+            }
             Variable::progNuanceurCustom.activer();
             break;
         case OutlineAlgorithm::OUTLINE_NORMALS:
-		
+		    // Done in shader
             break;
         case OutlineAlgorithm::OUTLINE_BF_CULLING:
-		
+            Variable::progNuanceurOpenGL.activer();
+            {
+                glEnable(GL_CULL_FACE);
+                {
+                    glCullFace(GL_BACK);
+                    glPolygonMode(GL_FRONT, GL_LINE);
+                    {
+                        glEnable(GL_LINE_SMOOTH);
+                        {
+                            float lineWidth;
+                            glGetFloatv(GL_LINE_WIDTH, &lineWidth);
+                            glLineWidth(7.5f);
+                            {
+                                glColor3f(0.0f, 0.0f, 0.0f);
+                                dessinerObjet(size);
+                            }
+                            glLineWidth(lineWidth);
+                        }
+                        glDisable(GL_LINE_SMOOTH);
+                    }
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                }
+                glDisable(GL_CULL_FACE);
+            }
+            Variable::progNuanceurCustom.activer();
             break;
         case OutlineAlgorithm::OUTLINE_NONE:
         default:
