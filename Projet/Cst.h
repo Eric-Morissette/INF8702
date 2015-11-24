@@ -53,25 +53,25 @@ public:
 // positionner aux mêmes endroits.
 
 // POINT LIGHT
-static GLfloat light_position0[] = { 20.0f, 10.0f, 3.0f, 1.0f };
-static GLfloat light_ambient0[]  = {  0.0f,  0.0f, 0.0f, 1.0f };
-static GLfloat light_diffuse0[]  = {  1.0f,  1.0f, 1.0f, 1.0f };
-static GLfloat light_specular0[] = {  1.0f,  1.0f, 1.0f, 1.0f };
-static GLfloat light_emission0[] = {  1.0f,  1.0f, 1.0f, 1.0f };
+static GLfloat light_position0[] = { 20.0f, 0.0f, 3.0f, 1.0f };
+static GLfloat light_ambient0[]  = {  0.0f, 0.0f, 0.0f, 1.0f };
+static GLfloat light_diffuse0[]  = {  1.0f, 1.0f, 1.0f, 1.0f };
+static GLfloat light_specular0[] = {  0.8f, 0.8f, 0.8f, 1.0f };
+static GLfloat light_emission0[] = {  1.0f, 1.0f, 1.0f, 1.0f };
 
 // SPOT LIGHT
-static GLfloat light_position1[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-static GLfloat light_ambient1[]  = { 0.0f, 0.0f, 0.0f, 1.0f };
-static GLfloat light_diffuse1[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-static GLfloat light_specular1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-static GLfloat light_emission1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+static GLfloat light_position1[] = { 10.0f, 30.0f, 90.0f, 0.0f };
+static GLfloat light_ambient1[]  = {  0.0f,  0.0f,  0.0f, 1.0f };
+static GLfloat light_diffuse1[]  = {  0.6f,  0.6f,  0.6f, 1.0f };
+static GLfloat light_specular1[] = {  0.7f,  0.7f,  0.7f, 1.0f };
+static GLfloat light_emission1[] = {  1.0f,  1.0f,  1.0f, 1.0f };
 
 // DIRECTIONNAL LIGHT
-static GLfloat light_position2[] = { -60.0f, 0.0f, 3.0f, 0.0f };
-static GLfloat light_ambient2[]  = {   0.0f, 0.0f, 0.0f, 1.0f };
-static GLfloat light_diffuse2[]  = {   1.0f, 1.0f, 1.0f, 1.0f };
-static GLfloat light_specular2[] = {   1.0f, 1.0f, 1.0f, 1.0f };
-static GLfloat light_emission2[] = {   1.0f, 1.0f, 1.0f, 1.0f };
+static GLfloat light_position2[] = { -20.0f, 0.0f, 50.0f, 0.0f };
+static GLfloat light_ambient2[]  = {   0.0f, 0.0f,  0.0f, 1.0f };
+static GLfloat light_diffuse2[]  = {   0.8f, 0.8f,  0.8f, 1.0f };
+static GLfloat light_specular2[] = {   0.8f, 0.8f,  0.8f, 1.0f };
+static GLfloat light_emission2[] = {   1.0f, 1.0f,  1.0f, 1.0f };
 
 // définition du matériau utilise.
 static GLfloat mat_ambiant_model[]   = { 0.0f, 0.0f, 0.0f, 1.0f };
