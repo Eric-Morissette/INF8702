@@ -186,6 +186,7 @@ vec4 flight()
 
 uniform int renderStyle;
 uniform sampler2D colorMap;
+uniform bool affichageNormal;
 
 // Cel Shading
 float seuil = 4.0;
@@ -273,5 +274,12 @@ void main (void)
 	color = baseColor + lightCoeff;
 	color = clamp(color, 0.0, 1.0);
 
-    gl_FragColor = renderColor(color, lightCoeff);
+	if(affichageNormal)
+	{
+		gl_FragColor = gl_Color;
+	}
+	else
+	{
+		gl_FragColor = renderColor(color, lightCoeff);
+	}
 }

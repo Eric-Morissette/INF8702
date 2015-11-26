@@ -41,5 +41,7 @@ GLuint Variable::texture0 = 0;
 GLuint Variable::texture1 = 0;
 GLuint Variable::texture2 = 0;
 
+float Variable::decalagePos = 0.05f;
+
 CNuanceurProg Variable::progNuanceurOpenGL;
 CNuanceurProg Variable::progNuanceurCustom("nuanceurs/nuanceurSommets.glsl", "nuanceurs/nuanceurFragments.glsl", false);

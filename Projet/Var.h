@@ -83,6 +83,10 @@ public:
     static GLuint texture1;
     static GLuint texture2;
 
+	//Facteur pour le decalage de la position des sommets par rapport à la normal
+	//lors du contour par normals
+	static float decalagePos;
+
     // Nuanceurs de Sommets/Fragments
     static CNuanceurProg progNuanceurOpenGL;
     static CNuanceurProg progNuanceurCustom;
