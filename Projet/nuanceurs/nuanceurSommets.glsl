@@ -32,7 +32,7 @@ void main(void)
 	{
 		if (dot(normal, normalize(ecPosition)) >= 0.0)
 		{
-			gl_Position += vec4(decalage * normal,1);	
+			gl_Position += vec4(decalage * normal,0);	
 			gl_FrontColor = vec4(0.0,0.0,0.0,1.0);					
 		}
 	}

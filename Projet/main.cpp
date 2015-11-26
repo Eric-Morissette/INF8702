@@ -99,7 +99,9 @@ void dessinerOutline(double size)
             break;
         case OutlineAlgorithm::OUTLINE_NORMALS:
 		    // Done in shader
+			Variable::progNuanceurCustom.uniform1("affichageNormal", true);
 			dessinerObjet(size);
+			Variable::progNuanceurCustom.uniform1("affichageNormal", false);
             break;
         case OutlineAlgorithm::OUTLINE_BF_CULLING:
             Variable::progNuanceurOpenGL.activer();
@@ -261,24 +263,20 @@ void clavier(unsigned char touche, int x, int y)
     case '4':
         //Halo
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_HALO;
-		Variable::progNuanceurCustom.uniform1("affichageNormal", false);
         break;
     case '5':
         //Normals
 		Variable::decalagePos = 0.05f;
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_NORMALS;
-		Variable::progNuanceurCustom.uniform1("affichageNormal", true);
 		Variable::progNuanceurCustom.uniform1("decalage", Variable::decalagePos);
         break;
     case '6':
         //Backface Culling
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_BF_CULLING;
-		Variable::progNuanceurCustom.uniform1("affichageNormal", false);
         break;
     case 'o':
         //No Outline
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_NONE;
-		Variable::progNuanceurCustom.uniform1("affichageNormal", false);
         break;
 
     case '7':
@@ -342,15 +340,15 @@ void clavier(unsigned char touche, int x, int y)
         affichage();
         break;
 
-	case '^':
+	case 'n':
 		// diminue le decalage
-		Variable::decalagePos /= 2;
+		Variable::decalagePos /= 1.5;
 		Variable::progNuanceurCustom.uniform1("decalage", Variable::decalagePos);
 		break;
 
-	case '¸':
+	case 'm':
 		// augmente le decalage
-		Variable::decalagePos *= 2;
+		Variable::decalagePos *= 1.5;
 		Variable::progNuanceurCustom.uniform1("decalage", Variable::decalagePos);
 		break;
 
