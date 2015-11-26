@@ -15,14 +15,18 @@ varying vec3 normal;
 // On POSE d'emblée que le matériau du gazon n'a PAS de composante spéculaire
 vec4 Ambient;
 vec4 Diffuse;
+vec4 Specular;
 
 // Calcul pour une lumière ponctuelle
-void pointLight(in int i)
+void pointLight(in int i, in vec3 eye)
 {
     float nDotVP;       // Produit scalaire entre VP et la normale
+	float nDotHV;       // normal . light half vector
+	float pf;           // power factor
     float attenuation;  // facteur d'atténuation calculé
     float d;            // distance entre lumière et fragment
     vec3  VP;           // Vecteur lumière
+	vec3  halfVector;   // direction of maximum highlights
 
     // Calculer vecteur lumière
     VP = vPointLight - ecPosition;
@@ -38,11 +42,24 @@ void pointLight(in int i)
         gl_LightSource[i].linearAttenuation * d +
         gl_LightSource[i].quadraticAttenuation * d * d);
 
-    nDotVP = max(0.0, dot(normal, VP));
+	halfVector = normalize(VP + eye);
 
-    // Calculer les contributions ambiantes et diffuses
+	nDotVP = max(0.0, dot(normal, VP));
+	nDotHV = max(0.0, dot(normal, halfVector));
+
+	if (nDotVP == 0.0)
+	{
+		pf = 0.0;
+	}
+	else
+	{
+		pf = pow(nDotHV, gl_FrontMaterial.shininess);
+	}
+
+    // Calculer les contributions ambiantes diffuses et speculaires
     Ambient += gl_LightSource[i].ambient * attenuation;
     Diffuse += gl_LightSource[i].diffuse * nDotVP * attenuation;
+	Specular += gl_LightSource[i].specular * pf * attenuation;
 }
 
 // Calcul pour une lumière directionnelle
@@ -53,21 +70,35 @@ void directionalLight(in int i)
     float pf;             // power factor
 
     nDotVP = max(0.0, dot(normal, normalize(vDirLight)));
+	nDotHV = max(0.0, dot(normal, vec3(gl_LightSource[i].halfVector)));
 
-    // Calculer les contributions ambiantes et diffuses
+	if (nDotVP == 0.0)
+	{
+		pf = 0.0;
+	}
+	else
+	{
+		pf = pow(nDotHV, gl_FrontMaterial.shininess);
+	}
+
+    // Calculer les contributions ambiantes diffuses et speculaires
     Ambient += gl_LightSource[i].ambient;
     Diffuse += gl_LightSource[i].diffuse * nDotVP;
+	Specular += gl_LightSource[i].specular * pf;
 }
 
 // Calcul pour une lumière "spot"
-void spotLight(in int i)
+void spotLight(in int i, in vec3 eye)
 {
-    float nDotVP;            // Produit scalaire entre VP et la normale
-    float spotDot;           // Cosinus angle entre VP et direction spot
-    float spotAttenuation;   // Facteur d'atténuation du spot
-    float attenuation;       // Facteur d'atténuation du à la distance
-    float d;                 // Distance à la lumière
-    vec3  VP;                // Vecteur lumière
+	float nDotVP;            // normal . light direction
+	float nDotHV;            // normal . light half vector
+	float pf;                // power factor
+	float spotDot;           // cosine of angle between spotlight
+	float spotAttenuation;   // spotlight attenuation factor
+	float attenuation;       // computed attenuation factor
+	float d;                 // distance from surface to light source
+	vec3  VP;                // direction from surface to light position
+	vec3  halfVector;        // direction of maximum highlights
 
     // Calculer le vecteur Lumière
     VP = vSpotLight - ecPosition;
@@ -97,37 +128,52 @@ void spotLight(in int i)
 
     // Combine les atténuation du spot et de la distance
     attenuation *= spotAttenuation;
+	halfVector = normalize(VP + eye);
 
     nDotVP = max(0.0, dot(normal, VP));
+	nDotHV = max(0.0, dot(normal, halfVector));
 
-    // Calculer les contributions ambiantes et diffuses
-    Ambient += 3.0 * gl_LightSource[i].ambient * attenuation;
-    Diffuse += 3.0 * gl_LightSource[i].diffuse * nDotVP * attenuation;
+	if (nDotVP == 0.0)
+	{
+		pf = 0.0;
+	}
+	else
+	{
+		pf = pow(nDotHV, gl_FrontMaterial.shininess);
+	}
+
+    // Calculer les contributions ambiantes diffuses et speculaires
+    Ambient += gl_LightSource[i].ambient * attenuation;
+    Diffuse += gl_LightSource[i].diffuse * nDotVP * attenuation;
+	Specular += gl_LightSource[i].specular * pf * attenuation;
 }
 
 vec4 flight()
 {
     vec4 color;
+	vec3 eye = vec3(0.0, 0.0, 1.0);
 
     // Réinitialiser les accumulateurs
     Ambient = vec4(0.0);
     Diffuse = vec4(0.0);
+	Specular = vec4(0.0);
 
     if (pointLightOn == 1) {
-        pointLight(0);
+        pointLight(0, eye);
     }
 
     if (dirLightOn == 1) {
-        directionalLight(1);
+        directionalLight(2);
     }
 
     if (spotLightOn == 1) {
-        spotLight(2);
+        spotLight(1, eye);
     }
 
     color = gl_FrontLightModelProduct.sceneColor +
         Ambient * gl_FrontMaterial.ambient +
-        Diffuse * gl_FrontMaterial.diffuse;
+        Diffuse * gl_FrontMaterial.diffuse + 
+		Specular  * gl_FrontMaterial.specular;
     color = clamp(color, 0.0, 1.0);
     return color;
 }
@@ -139,6 +185,7 @@ vec4 flight()
 // 3 - Gooch Shading
 
 uniform int renderStyle;
+uniform sampler2D colorMap;
 
 // Cel Shading
 float seuil = 4.0;
@@ -212,8 +259,19 @@ vec4 renderColor(vec4 c, vec4 lightCoeff)
 void main (void) 
 {
     vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
+	vec4 baseColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+	//Affichage en mode texture 
+	baseColor = texture2D(colorMap, gl_TexCoord[0].xy);
+
     vec4 lightCoeff = flight();
 
-    color *= lightCoeff;
+	//Affichage normal
+    //color *= lightCoeff;
+
+	//Affichage par texture
+	color = baseColor + lightCoeff;
+	color = clamp(color, 0.0, 1.0);
+
     gl_FragColor = renderColor(color, lightCoeff);
 }

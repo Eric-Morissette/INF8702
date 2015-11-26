@@ -171,6 +171,8 @@ void dessinerScene()
         glRotated(Variable::angleRotY, 0.0, 1.0, 0.0);
         glRotated(Variable::angleRotX, 1.0, 0.0, 0.0);
 
+		appliquerTextures();
+
         dessinerOutline(8.0);
 
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -619,7 +621,7 @@ void appliquerTextures()
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     glEnable(GL_TEXTURE_2D);
-
+	/*
     // ETAGE 1 (texture de rust)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, Variable::texture1);
@@ -634,7 +636,7 @@ void appliquerTextures()
     glBindTexture(GL_TEXTURE_2D, Variable::texture2);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);*/
 
     /*glUniform1i(glGetUniformLocation(fixedPipelineShaderProg, "texUnit0"), 0);
     glUniform1i(glGetUniformLocation(fixedPipelineShaderProg, "texUnit1"), 1);
