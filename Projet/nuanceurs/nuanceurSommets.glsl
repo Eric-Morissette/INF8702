@@ -1,5 +1,6 @@
 
 uniform bool affichageNormal;
+uniform bool utiliserTextures;
 
 uniform int pointLightOn;
 uniform int spotLightOn;
@@ -11,7 +12,7 @@ varying vec3 vSpotLight;
 varying vec3 ecPosition;
 varying vec3 normal;
 
-uniform float decalage;
+float decalage = 0.3;
 
 void main(void)
 {
@@ -26,15 +27,14 @@ void main(void)
     // Apply transformations
     gl_Position = ftransform();
     normal = normalize(gl_NormalMatrix * gl_Normal);
-	gl_TexCoord[0] = gl_MultiTexCoord0;
+    gl_TexCoord[0] = gl_MultiTexCoord0;
 
-	if(affichageNormal)
-	{
-		if (dot(normal, normalize(ecPosition)) >= 0.0)
-		{
-			gl_Position += vec4(decalage * normal,0);	
-			gl_FrontColor = vec4(0.0,0.0,0.0,1.0);					
-		}
-	}
-
+    if(affichageNormal)
+    {
+        // Try and reduce the amount of faces that have to be drawn
+        if (dot(normal, normalize(ecPosition)) >= -0.5)
+        {
+            gl_Position += vec4(decalage * normal,0);
+        }
+    }
 }

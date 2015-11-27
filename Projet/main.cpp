@@ -266,9 +266,7 @@ void clavier(unsigned char touche, int x, int y)
         break;
     case '5':
         //Normals
-		Variable::decalagePos = 0.05f;
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_NORMALS;
-		Variable::progNuanceurCustom.uniform1("decalage", Variable::decalagePos);
         break;
     case '6':
         //Backface Culling
@@ -325,6 +323,13 @@ void clavier(unsigned char touche, int x, int y)
         glutPostRedisplay();
         break;
 
+    // Toggle the textures
+    case 't':
+        Variable::utiliserTextures = !Variable::utiliserTextures;
+        Variable::progNuanceurCustom.uniform1("utiliserTextures", Variable::utiliserTextures);
+        glutPostRedisplay();
+        break;
+
     case '-' :
         // la caméra recule
         Variable::rho += 2.0f;
@@ -339,18 +344,6 @@ void clavier(unsigned char touche, int x, int y)
             Variable::rho = 1.0f;
         affichage();
         break;
-
-	case 'n':
-		// diminue le decalage
-		Variable::decalagePos /= 1.5;
-		Variable::progNuanceurCustom.uniform1("decalage", Variable::decalagePos);
-		break;
-
-	case 'm':
-		// augmente le decalage
-		Variable::decalagePos *= 1.5;
-		Variable::progNuanceurCustom.uniform1("decalage", Variable::decalagePos);
-		break;
 
     case ' ' :
         // permuter la rotation automatique du modèle

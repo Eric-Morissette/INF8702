@@ -78,14 +78,11 @@ public:
     static bool dirLightAllumee;
     static bool pointLightAllumee;
 
-    // Noms de textures
+    // Textures
+    static bool utiliserTextures;
     static GLuint texture0;
     static GLuint texture1;
     static GLuint texture2;
-
-	//Facteur pour le decalage de la position des sommets par rapport à la normal
-	//lors du contour par normals
-	static float decalagePos;
 
     // Nuanceurs de Sommets/Fragments
     static CNuanceurProg progNuanceurOpenGL;
