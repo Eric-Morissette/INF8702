@@ -63,6 +63,9 @@ public:
     // Nuanceurs de Sommets/Fragments
     static CNuanceurProg progNuanceurOpenGL;
     static CNuanceurProg progNuanceurCustom;
+
+    static int sceneRenderStyle;
+    static int objectRenderStyle;
 };
 
 #endif //VARIABLE_H

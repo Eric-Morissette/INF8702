@@ -8,6 +8,7 @@
 #include "Var.h"
 #include "Cst.h"
 #include "NuanceurProg.h"
+#include <iostream>
 
 // PROTOTYPES DES FONCTIONS
 void initialisation (void);
@@ -82,7 +83,7 @@ void dessinerObjet(DrawnShape shape, double size)
         glPushMatrix();
         {
             glutSolidTeapot(size);
-            glTranslatef(7.5f, 7.5f, 0.0f);
+            glTranslatef(9.5f, 9.5f, 0.0f);
             glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
             glutSolidTeapot(size);
         }
@@ -190,84 +191,86 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
         {
         case DrawnShape::SHAPE_SCENE:
 
-            // First way to generate a scene:
-            //  all outlines -> all objects
-            //  objects in the back overwrite the outlines of objects in the front
-            /*
-            glPushMatrix();
+            switch (Variable::sceneRenderStyle)
             {
-                dessinerOutline(DrawnShape::SHAPE_CUBE, 8.0);
-                glTranslatef(-5.0f, 15.0f, 0.0f);
-                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
-                dessinerOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
-            }
-            glPopMatrix();
+            case 0:
+                // First way to generate a scene:
+                //  all outlines -> all objects
+                //  objects in the back overwrite the outlines of objects in the front
+                glPushMatrix();
+                {
+                    dessinerOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                    glTranslatef(-5.0f, 15.0f, 0.0f);
+                    glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                    dessinerOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+                }
+                glPopMatrix();
 
-            glClear(GL_DEPTH_BUFFER_BIT);
-
-            glPushMatrix();
-            {
-                dessinerObjet(DrawnShape::SHAPE_CUBE, 8.0);
-                glTranslatef(-5.0f, 15.0f, 0.0f);
-                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
-                dessinerObjet(DrawnShape::SHAPE_TEAPOT_2, 5.0);
-            }
-            glPopMatrix();
-            /**/
-
-
-            // Second way to generate a scene:
-            //  object's outline -> object's shape -> next object
-            //  has different outcomes related to the order in which the objects are drawn
-            /*
-            glPushMatrix();
-            {
-                dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
-                glTranslatef(-5.0f, 15.0f, 0.0f);
-                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
-                dessinerObjetEtOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
-            }
-            glPopMatrix();
-            /**/
-
-
-            // Third way to generate a scene:
-            //  all outlines -> all objects
-            //  the order in which the objects are drawn changes the outcome, would work otherwise
-            /**/
-            glPushMatrix();
-            {
-                dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
                 glClear(GL_DEPTH_BUFFER_BIT);
-                glTranslatef(-5.0f, 15.0f, 0.0f);
-                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
-                dessinerObjetEtOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+
+                glPushMatrix();
+                {
+                    dessinerObjet(DrawnShape::SHAPE_CUBE, 8.0);
+                    glTranslatef(-5.0f, 15.0f, 0.0f);
+                    glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                    dessinerObjet(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+                }
+                glPopMatrix();
+                break;
+
+            case 1:
+                // Second way to generate a scene:
+                //  object's outline -> object's shape -> next object
+                //  has different outcomes related to the order in which the objects are drawn
+                glPushMatrix();
+                {
+                    dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                    glTranslatef(-5.0f, 15.0f, 0.0f);
+                    glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                    dessinerObjetEtOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+                }
+                glPopMatrix();
+                break;
+
+            case 2:
+                // Third way to generate a scene:
+                //  all outlines -> all objects
+                //  the order in which the objects are drawn changes the outcome, would work otherwise
+                glPushMatrix();
+                {
+                    dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                    glClear(GL_DEPTH_BUFFER_BIT);
+                    glTranslatef(-5.0f, 15.0f, 0.0f);
+                    glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                    dessinerObjetEtOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+                }
+                glPopMatrix();
+                break;
+
+            case 3:
+                // Alternate way to generate a scene, using stencil:
+                //  does not work for Outline 4 (Halo) and 5 (Normal)
+                //  has artefacts for Outline 6 (BF Culling)
+                glEnable(GL_STENCIL_TEST);
+                {
+                    glClearStencil(0);
+                    glClear(GL_STENCIL_BUFFER_BIT);
+                    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+                    // Render the object
+                    glStencilFunc(GL_ALWAYS, 1, -1);
+                    dessinerObjet(shape, 8.0);
+
+                    // Render the Outline
+                    glStencilFunc(GL_NOTEQUAL, 1, -1);
+                    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+                    dessinerOutline(shape, 8.0);
+                }
+                glDisable(GL_STENCIL_TEST);
+                break;
+            default:
+                break;
             }
-            glPopMatrix();
-            /**/
-
-
-            // Alternate way to generate a scene, using stencil:
-            //  does not work for Outline 4 (Halo) and 5 (Normal)
-            //  has artefacts for Outline 6 (BF Culling)
-            /*
-            glEnable(GL_STENCIL_TEST);
-            {
-                glClearStencil(0);
-                glClear(GL_STENCIL_BUFFER_BIT);
-                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-                // Render the object
-                glStencilFunc(GL_ALWAYS, 1, -1);
-                dessinerObjet(shape, 8.0);
-
-                // Render the Outline
-                glStencilFunc(GL_NOTEQUAL, 1, -1);
-                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-                dessinerOutline(shape, 8.0);
-            }
-            glDisable(GL_STENCIL_TEST);
-            /**/
 
             break;
         case DrawnShape::SHAPE_NONE:
@@ -278,33 +281,34 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
         case DrawnShape::SHAPE_CUBE_2:
         case DrawnShape::SHAPE_SPHERE_2:
 
-            // Draw an object with a depth buffer
-            /**/
-            dessinerOutline(shape, 8.0);
-
-            glClear(GL_DEPTH_BUFFER_BIT);
-
-            dessinerObjet(shape, 8.0);
-            /**/
-
-
-            // Draw an object with a stencil buffer
-            /*
-            glEnable(GL_STENCIL_TEST);
+            switch (Variable::objectRenderStyle)
             {
-                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-                // Render the object
-                glStencilFunc(GL_ALWAYS, 1, -1);
-                dessinerObjet(shape, 8.0);
-
-                // Render the outline
-                glStencilFunc(GL_NOTEQUAL, 1, -1);
+            case 0:
+                // Draw an object with a depth buffer
 
                 dessinerOutline(shape, 8.0);
+
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                dessinerObjet(shape, 8.0);
+                break;
+            case 1:
+                // Draw an object with a stencil buffer
+                glEnable(GL_STENCIL_TEST);
+                {
+                    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+                    // Render the object
+                    glStencilFunc(GL_ALWAYS, 1, -1);
+                    dessinerObjet(shape, 8.0);
+
+                    // Render the outline
+                    glStencilFunc(GL_NOTEQUAL, 1, -1);
+
+                    dessinerOutline(shape, 8.0);
+                }
+                glDisable(GL_STENCIL_TEST);
             }
-            glDisable(GL_STENCIL_TEST);
-            /**/
             break;
         default:
             break;
@@ -442,6 +446,52 @@ void clavier(unsigned char touche, int x, int y)
     case 'z':
         //Scene
         Variable::drawnShape = DrawnShape::SHAPE_SCENE;
+        break;
+    case 'x':
+        //Scene
+        Variable::sceneRenderStyle++;
+        if (Variable::sceneRenderStyle > 3)
+        {
+            Variable::sceneRenderStyle = 0;
+        }
+        switch (Variable::sceneRenderStyle)
+        {
+        case 0:
+            std::cout << "Scene Style: Depth: All Outlines -> All Objects " << std::endl;
+            break;
+        case 1:
+            std::cout << "Scene Style: Depth: Obj1 -> Obj2 -> ..." << std::endl;
+            break;
+        case 2:
+            std::cout << "Scene Style: Depth: Obj1 -> Obj2 -> ... w/ Depth Clear" << std::endl;
+            break;
+        case 3:
+            std::cout << "Scene Style: Stencil Buffer" << std::endl;
+            break;
+        default:
+            std::cout << "Scene Style: Unknown" << std::endl;
+            break;
+        }
+        break;
+    case 'c':
+        //Scene
+        Variable::objectRenderStyle++;
+        if (Variable::objectRenderStyle > 1)
+        {
+            Variable::objectRenderStyle = 0;
+        }
+        switch (Variable::objectRenderStyle)
+        {
+        case 0:
+            std::cout << "Object Style: Depth" << std::endl;
+            break;
+        case 1:
+            std::cout << "Object Style: Stencil" << std::endl;
+            break;
+        default:
+            std::cout << "Object Style: Unknown" << std::endl;
+            break;
+        }
         break;
 
     case '4':
