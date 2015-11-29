@@ -333,6 +333,7 @@ void main (void)
     else
     {
         vec4 baseColor = vec4(1.0, 1.0, 1.0, 1.0);
+        float lightIntensity = length(flight().rgb);
 
         //Affichage en mode texture
         if (utiliserTextures)
@@ -342,13 +343,15 @@ void main (void)
 
         vec3 colorHSV = rgb2hsv(baseColor.rgb);
 
+        // If in Cel or Gooch Shading, 
+        // tweak the hue and increase lightning
         if (renderStyle == 2 || renderStyle == 3)
         {
             colorHSV.x = tweakHue(colorHSV.x);
+            lightIntensity *= 1.2;
         }
 
-        float lightIntensity = length(flight().rgb) * 1.2;
-        lightIntensity = clamp(lightIntensity, 0.1, 1.2);
+        lightIntensity = clamp(lightIntensity, 0.1, 1.0);
         lightIntensity /= 2.0;
 
         // HSV -> HSL

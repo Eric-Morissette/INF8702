@@ -4,11 +4,6 @@
 #include "Singleton.h"
 #include <GL/glew.h>
 
-
-///////////////////////////////////////////////
-// declaration des macros et defines globaux //
-///////////////////////////////////////////////
-
 #ifndef M_PI
 #define M_PI 3.1415926535897932385
 #endif
@@ -17,6 +12,31 @@
 #ifndef NULL
 #define NULL 0
 #endif
+
+enum DrawnShape {
+    SHAPE_NONE,
+    SHAPE_TEAPOT,
+    SHAPE_TEAPOT_2,
+    SHAPE_CUBE,
+    SHAPE_CUBE_2,
+    SHAPE_SPHERE,
+    SHAPE_SPHERE_2,
+    SHAPE_SCENE,
+};
+
+enum ShaderStyle {
+    SHADER_NONE,
+    SHADER_CLASSIC,
+    SHADER_CEL_SHADING,
+    SHADER_GOOCH_SHADING,
+};
+
+enum OutlineAlgorithm {
+    OUTLINE_NONE,
+    OUTLINE_HALO,
+    OUTLINE_NORMALS,
+    OUTLINE_BF_CULLING,
+};
 
 
 class Constant : public Singleton<Constant>

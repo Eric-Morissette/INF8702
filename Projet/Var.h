@@ -4,31 +4,7 @@
 #include "Singleton.h"
 #include <GL/glew.h>
 #include "NuanceurProg.h"
-
-///////////////////////////////////////////////
-// Énumérations globales                     //
-///////////////////////////////////////////////
-enum DrawnShape {
-    SHAPE_NONE,
-    SHAPE_TEAPOT,
-    SHAPE_CUBE,
-    SHAPE_SPHERE,
-};
-
-enum ShaderStyle {
-    SHADER_NONE,
-    SHADER_CLASSIC,
-    SHADER_CEL_SHADING,
-    SHADER_GOOCH_SHADING,
-};
-
-enum OutlineAlgorithm {
-    OUTLINE_NONE,
-    OUTLINE_HALO,
-    OUTLINE_NORMALS,
-    OUTLINE_BF_CULLING,
-};
-
+#include "Cst.h"
 
 class Variable : public Singleton<Variable>
 {

@@ -11,6 +11,9 @@
 
 // PROTOTYPES DES FONCTIONS
 void initialisation (void);
+void dessinerObjet(DrawnShape shape, double size);
+void dessinerOutline(DrawnShape shape, double size);
+void dessinerObjetEtOutline(DrawnShape shape, double size);
 void dessinerScene();
 void affichage(void);
 void attente(void);
@@ -62,9 +65,9 @@ void initialisation (void) {
     chargerTextures();
 }
 
-void dessinerObjet(double size)
+void dessinerObjet(DrawnShape shape, double size)
 {
-    switch (Variable::drawnShape)
+    switch (shape)
     {
     case DrawnShape::SHAPE_TEAPOT:
         glutSolidTeapot(size);
@@ -73,15 +76,54 @@ void dessinerObjet(double size)
         glutSolidCube(size);
         break;
     case DrawnShape::SHAPE_SPHERE:
-        glutSolidSphere(size, 100, 100);
+        glutSolidSphere(size, 20, 20);
         break;
+    case DrawnShape::SHAPE_TEAPOT_2:
+        glPushMatrix();
+        {
+            glutSolidTeapot(size);
+            glTranslatef(7.5f, 7.5f, 0.0f);
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glutSolidTeapot(size);
+        }
+        glPopMatrix();
+        break;
+    case DrawnShape::SHAPE_CUBE_2:
+        glPushMatrix();
+        {
+            glutSolidCube(size);
+            glTranslatef(5.0f, 5.0f, 5.0f);
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glutSolidCube(size);
+        }
+        glPopMatrix();
+        break;
+    case DrawnShape::SHAPE_SPHERE_2:
+        glPushMatrix();
+        {
+            glutSolidSphere(size, 20, 20);
+            glTranslatef(8.0f, 8.0f, 8.0f);
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glutSolidSphere(size, 20, 20);
+        }
+        glPopMatrix();
+        break;
+    case DrawnShape::SHAPE_SCENE: // Handled elsewhere
+        glPushMatrix();
+        {
+            dessinerObjet(DrawnShape::SHAPE_CUBE, 5.0);
+            glTranslatef(-5.0f, 15.0f, 0.0f);
+            glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+            dessinerObjet(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+        }
+        glPopMatrix();
     case DrawnShape::SHAPE_NONE:
     default:
         break;
     }
 }
 
-void dessinerOutline(double size)
+void dessinerOutline(DrawnShape shape, double size)
 {
     glPushMatrix();
     {
@@ -93,14 +135,14 @@ void dessinerOutline(double size)
             {
                 glColor3f(0.0f, 0.0f, 0.0f);
 
-                dessinerObjet(size * 1.02);
+                dessinerObjet(shape, size * 1.02);
             }
             Variable::progNuanceurCustom.activer();
             break;
         case OutlineAlgorithm::OUTLINE_NORMALS:
 		    // Done in shader
 			Variable::progNuanceurCustom.uniform1("affichageNormal", true);
-			dessinerObjet(size);
+			dessinerObjet(shape, size);
 			Variable::progNuanceurCustom.uniform1("affichageNormal", false);
             break;
         case OutlineAlgorithm::OUTLINE_BF_CULLING:
@@ -115,10 +157,11 @@ void dessinerOutline(double size)
                         {
                             float lineWidth;
                             glGetFloatv(GL_LINE_WIDTH, &lineWidth);
-                            glLineWidth(7.5f);
+                            // Multiply by 30/rho to compensate the line width with the camera zoom
+                            glLineWidth(7.5f * (30.0 / Variable::rho));
                             {
                                 glColor3f(0.0f, 0.0f, 0.0f);
-                                dessinerObjet(size);
+                                dessinerObjet(shape, size);
                             }
                             glLineWidth(lineWidth);
                         }
@@ -137,6 +180,137 @@ void dessinerOutline(double size)
         glEnable(GL_LIGHTING);
     }
     glPopMatrix();
+}
+
+void dessinerObjetEtOutline(DrawnShape shape, double size)
+{
+    appliquerTextures();
+    {
+        switch (shape)
+        {
+        case DrawnShape::SHAPE_SCENE:
+
+            // First way to generate a scene:
+            //  all outlines -> all objects
+            //  objects in the back overwrite the outlines of objects in the front
+            /*
+            glPushMatrix();
+            {
+                dessinerOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                glTranslatef(-5.0f, 15.0f, 0.0f);
+                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                dessinerOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+            }
+            glPopMatrix();
+
+            glClear(GL_DEPTH_BUFFER_BIT);
+
+            glPushMatrix();
+            {
+                dessinerObjet(DrawnShape::SHAPE_CUBE, 8.0);
+                glTranslatef(-5.0f, 15.0f, 0.0f);
+                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                dessinerObjet(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+            }
+            glPopMatrix();
+            /**/
+
+
+            // Second way to generate a scene:
+            //  object's outline -> object's shape -> next object
+            //  has different outcomes related to the order in which the objects are drawn
+            /*
+            glPushMatrix();
+            {
+                dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                glTranslatef(-5.0f, 15.0f, 0.0f);
+                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                dessinerObjetEtOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+            }
+            glPopMatrix();
+            /**/
+
+
+            // Third way to generate a scene:
+            //  all outlines -> all objects
+            //  the order in which the objects are drawn changes the outcome, would work otherwise
+            /**/
+            glPushMatrix();
+            {
+                dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                glClear(GL_DEPTH_BUFFER_BIT);
+                glTranslatef(-5.0f, 15.0f, 0.0f);
+                glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
+                dessinerObjetEtOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
+            }
+            glPopMatrix();
+            /**/
+
+
+            // Alternate way to generate a scene, using stencil:
+            //  does not work for Outline 4 (Halo) and 5 (Normal)
+            //  has artefacts for Outline 6 (BF Culling)
+            /*
+            glEnable(GL_STENCIL_TEST);
+            {
+                glClearStencil(0);
+                glClear(GL_STENCIL_BUFFER_BIT);
+                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+                // Render the object
+                glStencilFunc(GL_ALWAYS, 1, -1);
+                dessinerObjet(shape, 8.0);
+
+                // Render the Outline
+                glStencilFunc(GL_NOTEQUAL, 1, -1);
+                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+                dessinerOutline(shape, 8.0);
+            }
+            glDisable(GL_STENCIL_TEST);
+            /**/
+
+            break;
+        case DrawnShape::SHAPE_NONE:
+        case DrawnShape::SHAPE_TEAPOT:
+        case DrawnShape::SHAPE_CUBE:
+        case DrawnShape::SHAPE_SPHERE:
+        case DrawnShape::SHAPE_TEAPOT_2:
+        case DrawnShape::SHAPE_CUBE_2:
+        case DrawnShape::SHAPE_SPHERE_2:
+
+            // Draw an object with a depth buffer
+            /**/
+            dessinerOutline(shape, 8.0);
+
+            glClear(GL_DEPTH_BUFFER_BIT);
+
+            dessinerObjet(shape, 8.0);
+            /**/
+
+
+            // Draw an object with a stencil buffer
+            /*
+            glEnable(GL_STENCIL_TEST);
+            {
+                glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+                // Render the object
+                glStencilFunc(GL_ALWAYS, 1, -1);
+                dessinerObjet(shape, 8.0);
+
+                // Render the outline
+                glStencilFunc(GL_NOTEQUAL, 1, -1);
+
+                dessinerOutline(shape, 8.0);
+            }
+            glDisable(GL_STENCIL_TEST);
+            /**/
+            break;
+        default:
+            break;
+        }
+    }
+    desactiverTextures();
 }
 
 void dessinerScene()
@@ -174,15 +348,9 @@ void dessinerScene()
         glRotated(Variable::angleRotY, 0.0, 1.0, 0.0);
         glRotated(Variable::angleRotX, 1.0, 0.0, 0.0);
 
-		appliquerTextures();
-
-        dessinerOutline(8.0);
-
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        dessinerObjet(8.0);
-
-        desactiverTextures();
+        glClearStencil(0);
+        glClear(GL_STENCIL_BUFFER_BIT);
+        dessinerObjetEtOutline(Variable::drawnShape, 8.0);
     }
     glPopMatrix();
 
@@ -258,6 +426,22 @@ void clavier(unsigned char touche, int x, int y)
     case '3':
         //Sphere
         Variable::drawnShape = DrawnShape::SHAPE_SPHERE;
+        break;
+    case '!':
+        //Teapot
+        Variable::drawnShape = DrawnShape::SHAPE_TEAPOT_2;
+        break;
+    case '@':
+        //Cube
+        Variable::drawnShape = DrawnShape::SHAPE_CUBE_2;
+        break;
+    case '#':
+        //Sphere
+        Variable::drawnShape = DrawnShape::SHAPE_SPHERE_2;
+        break;
+    case 'z':
+        //Scene
+        Variable::drawnShape = DrawnShape::SHAPE_SCENE;
         break;
 
     case '4':
