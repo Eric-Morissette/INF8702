@@ -109,7 +109,7 @@ void dessinerObjet(DrawnShape shape, double size)
         }
         glPopMatrix();
         break;
-    case DrawnShape::SHAPE_SCENE: // Handled elsewhere
+    case DrawnShape::SHAPE_SCENE:
         glPushMatrix();
         {
             dessinerObjet(DrawnShape::SHAPE_CUBE, 5.0);
@@ -197,25 +197,12 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
                 // First way to generate a scene:
                 //  all outlines -> all objects
                 //  objects in the back overwrite the outlines of objects in the front
-                glPushMatrix();
-                {
-                    dessinerOutline(DrawnShape::SHAPE_CUBE, 8.0);
-                    glTranslatef(-5.0f, 15.0f, 0.0f);
-                    glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
-                    dessinerOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
-                }
-                glPopMatrix();
+                dessinerOutline(shape, 8.0);
 
                 glClear(GL_DEPTH_BUFFER_BIT);
 
-                glPushMatrix();
-                {
-                    dessinerObjet(DrawnShape::SHAPE_CUBE, 8.0);
-                    glTranslatef(-5.0f, 15.0f, 0.0f);
-                    glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
-                    dessinerObjet(DrawnShape::SHAPE_TEAPOT_2, 5.0);
-                }
-                glPopMatrix();
+                dessinerObjet(shape, 8.0);
+
                 break;
 
             case 1:
@@ -224,7 +211,7 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
                 //  has different outcomes related to the order in which the objects are drawn
                 glPushMatrix();
                 {
-                    dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                    dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 5.0);
                     glTranslatef(-5.0f, 15.0f, 0.0f);
                     glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
                     dessinerObjetEtOutline(DrawnShape::SHAPE_TEAPOT_2, 5.0);
@@ -238,7 +225,7 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
                 //  the order in which the objects are drawn changes the outcome, would work otherwise
                 glPushMatrix();
                 {
-                    dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 8.0);
+                    dessinerObjetEtOutline(DrawnShape::SHAPE_CUBE, 5.0);
                     glClear(GL_DEPTH_BUFFER_BIT);
                     glTranslatef(-5.0f, 15.0f, 0.0f);
                     glRotatef(90.0f, 0.2f, 0.5f, 0.7f);
@@ -263,7 +250,6 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
 
                     // Render the Outline
                     glStencilFunc(GL_NOTEQUAL, 1, -1);
-                    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
                     dessinerOutline(shape, 8.0);
                 }
                 glDisable(GL_STENCIL_TEST);
@@ -273,7 +259,6 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
             }
 
             break;
-        case DrawnShape::SHAPE_NONE:
         case DrawnShape::SHAPE_TEAPOT:
         case DrawnShape::SHAPE_CUBE:
         case DrawnShape::SHAPE_SPHERE:
@@ -304,12 +289,12 @@ void dessinerObjetEtOutline(DrawnShape shape, double size)
 
                     // Render the outline
                     glStencilFunc(GL_NOTEQUAL, 1, -1);
-
                     dessinerOutline(shape, 8.0);
                 }
                 glDisable(GL_STENCIL_TEST);
             }
             break;
+        case DrawnShape::SHAPE_NONE:
         default:
             break;
         }

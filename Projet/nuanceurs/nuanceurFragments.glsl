@@ -234,11 +234,6 @@ vec4 renderColor(vec4 c, float intensity)
         break;
 
     case 2: // Cel Shading
-        // Color Based Algorithm
-        /*color.r = (floor(color.r * seuil)) / seuil;
-        color.g = (floor(color.g * seuil)) / seuil;
-        color.b = (floor(color.b * seuil)) / seuil;*/
-
         // Light Intensity Based Algorithm
         if (intensity > 0.8)
         {
@@ -263,24 +258,14 @@ vec4 renderColor(vec4 c, float intensity)
         break;
 
     case 3: // 3 - Gooch Shading
-        // Color Based Algorithm
-        /*color.r = (color.r * goochWarmColor.r) + ((1.0 - color.r) * goochColdColor.r);
-        color.g = (color.g * goochWarmColor.g) + ((1.0 - color.g) * goochColdColor.g);
-        color.b = (color.b * goochWarmColor.b) + ((1.0 - color.b) * goochColdColor.b);*/
-
         // Light Intensity Based Algorithm
         // The way it works is that we start with a white color
-        // "Remove" Cold/Warm colors via the intensity
+        // "Add" Cold/Warm colors via the intensity
         // Multiply the object's color with the gooch value
-        vec4 goochColor = vec4(1.0, 1.0, 1.0, 1.0);
-        goochColor.rgb -= (1.0 - intensity) * goochWarmColor;
-        goochColor.rgb -= intensity * goochColdColor;
+        vec4 goochColor = vec4(0.0, 0.0, 0.0, 1.0);
+        goochColor.rgb += (1.0 - intensity) * goochColdColor;
+        goochColor.rgb += intensity * goochWarmColor;
         color = goochColor;
-
-        /*vec4 goochColor = vec4(0.5, 0.5, 0.5, 1.0);
-        goochColor.rgb -= (1.0 - intensity) * goochWarmColor;
-        goochColor.rgb -= (intensity / 2.0) * goochColdColor;
-        color = vec4(goochColor.rgb * 2.0, goochColor.a);*/
 
         break;
 
