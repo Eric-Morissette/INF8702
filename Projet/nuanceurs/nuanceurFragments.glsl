@@ -174,8 +174,7 @@ vec4 flight()
 
     color = gl_FrontLightModelProduct.sceneColor +
         Ambient * gl_FrontMaterial.ambient +
-        Diffuse * gl_FrontMaterial.diffuse + 
-        Specular  * gl_FrontMaterial.specular;
+        Diffuse * gl_FrontMaterial.diffuse;
     color = clamp(color, 0.0, 1.0);
     return color;
 }
@@ -258,7 +257,7 @@ vec4 renderColor(vec4 c, float intensity)
         break;
 
     case 3: // 3 - Gooch Shading
-        // Light Intensity Based Algorithm
+        // Light Intensity Based98 Algorithm
         // The way it works is that we start with a white color
         // "Add" Cold/Warm colors via the intensity
         // Multiply the object's color with the gooch value
@@ -274,6 +273,7 @@ vec4 renderColor(vec4 c, float intensity)
         break;
     }
     color.a = 1.0;
+    color += Specular  * gl_FrontMaterial.specular;
 
     return color;
 }
