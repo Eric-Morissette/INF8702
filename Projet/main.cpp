@@ -23,13 +23,8 @@ void clavierSpecial(int touche, int x, int y);
 void redimensionnement(GLsizei w, GLsizei h);
 
 void rafraichirCamera();
-void compileGrilleQuads(int listID, float size, int nbRows, int nbColums, bool outsideNormal);
-void compileCube(int listID, float size, int nbRows, int nbColums, bool outsideNormal);
-void dessinerGrilleQuads(float size, int nbRows, int nbColums, bool outsideNormal);
 void rafraichirEclairage();
 void rafraichirProjection();
-void afficherShaderInfoLog(GLuint obj);
-void afficherProgramInfoLog(GLuint obj);
 void appliquerTextures();
 SImage* LoadBMP(char* Filename);
 void init2DTexture(GLint texName, GLint texWidth, GLint texHeight, GLubyte *texPtr);

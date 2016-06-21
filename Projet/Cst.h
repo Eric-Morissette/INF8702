@@ -1,7 +1,6 @@
 #ifndef CONSTANT_H
 #define CONSTANT_H
 
-#include "Singleton.h"
 #include <GL/glew.h>
 
 #ifndef M_PI
@@ -39,9 +38,8 @@ enum OutlineAlgorithm {
 };
 
 
-class Constant : public Singleton<Constant>
+class Constant
 {
-    SINGLETON_DECLARATION_CLASSE(Constant);
 public:
     // constante de parametre speculaire
     static const GLfloat gl_separate_specular_color;

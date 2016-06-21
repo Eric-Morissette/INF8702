@@ -1,8 +1,6 @@
 #include "Var.h"
 #include "Cst.h"
 
-SINGLETON_DECLARATION_CPP(Variable);
-
 DrawnShape          Variable::drawnShape        = SHAPE_TEAPOT;
 ShaderStyle         Variable::shaderStyle       = SHADER_NONE;
 OutlineAlgorithm    Variable::outlineAlgorithm  = OUTLINE_NONE;

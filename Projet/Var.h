@@ -1,14 +1,12 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-#include "Singleton.h"
 #include <GL/glew.h>
 #include "NuanceurProg.h"
 #include "Cst.h"
 
-class Variable : public Singleton<Variable>
+class Variable
 {
-    SINGLETON_DECLARATION_CLASSE(Variable);
 public:
     static DrawnShape drawnShape;
     static ShaderStyle shaderStyle;

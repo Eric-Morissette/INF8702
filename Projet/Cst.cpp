@@ -1,7 +1,5 @@
 #include "Cst.h"
 
-SINGLETON_DECLARATION_CPP(Constant);
-
 // constante de parametre speculaire
 const GLfloat Constant::gl_separate_specular_color = GL_SEPARATE_SPECULAR_COLOR;
 

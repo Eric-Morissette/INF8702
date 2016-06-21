@@ -94,7 +94,6 @@
   <ItemGroup>
     <ClInclude Include="Cst.h" />
     <ClInclude Include="NuanceurProg.h" />
-    <ClInclude Include="Singleton.h" />
     <ClInclude Include="textfile.h" />
     <ClInclude Include="Var.h" />
   </ItemGroup>
