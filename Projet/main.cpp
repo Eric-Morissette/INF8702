@@ -482,18 +482,22 @@ void clavier(unsigned char touche, int x, int y)
     case '4':
         //Halo
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_HALO;
+        std::cout << "Outline: Halo" << std::endl;
         break;
     case '5':
         //Normals
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_NORMALS;
+        std::cout << "Outline: Normals" << std::endl;
         break;
     case '6':
         //Backface Culling
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_BF_CULLING;
+        std::cout << "Outline: Back-Face Culling" << std::endl;
         break;
     case 'o':
         //No Outline
         Variable::outlineAlgorithm = OutlineAlgorithm::OUTLINE_NONE;
+        std::cout << "Outline: None" << std::endl;
         break;
 
     case '7':
